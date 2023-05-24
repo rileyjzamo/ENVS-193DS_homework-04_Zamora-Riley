@@ -72,6 +72,7 @@ fit <- lm(weight~length, data = data_wrangle) # fit a linear model
 fit
 ```
 
+\newpage
 
 ## Part 4.  
 ```{r}
@@ -89,6 +90,8 @@ Scale-Location: This plot shows $\sqrt{standardized\ residuals}$ vs Fitted value
 
 Residuals Vs Leverage: This plot shows us our standardized residuals vs the leverage points which helps us see if there are influential points that alter our data. We have some outliers and some and some leverage points that seem to slightly affect our data.  
 
+\newpage
+
 ## Part 6.  
 
 ```{r}
@@ -98,8 +101,89 @@ summary(fit) # the summary function will show all the estimates and coefficients
 ## Part 7.  
 
 ```{r}
+library(flextable)
+library(broom)
 
+fit_anova <- anova(fit) 
+
+# Code from workshop
+model_squares_table <- tidy(fit_anova) %>% 
+  # round the sum of squares and mean squares columns to have 5 digits (could be less)
+  mutate(across(sumsq:meansq, ~ round(.x, digits = 2))) %>% 
+  # round the F-statistic to have 1 digit
+  mutate(statistic = round(statistic, digits = 1)) %>% 
+  # replace the very very very small p value with < 0.001
+  mutate(p.value = case_when(
+    p.value < 0.001 ~ "< 0.001"
+  )) %>% 
+  # rename the length cell to be meaningful
+  mutate(term = case_when(
+    term == "length" ~ "Perch Trout length (mm)",
+    TRUE ~ term
+  )) %>% 
+  # make the data frame a flextable object
+  flextable() %>% 
+  # change the header labels to be meaningful
+  set_header_labels(df = "Degrees of Freedom", 
+                    sumsq = "Sum of squares",
+                    meansq = "Mean squares",
+                    statistic = "F-statistic",
+                    p.value = "p-value")
+
+model_squares_table
 ```
+
+
+## Part 8.  
+
+The summary and anova functions both give us an f-statistic of $\approx1281$ on 288 residual degrees of freedom. The p-value we get across both summary and anova is the same. The summary function gives us more information about t-statistics and the $\beta$ estimates. The anova is aimed solely at the variance so we are only given the f-stat.  
+
+
+
+## Part 9.  
+
+Answering our question of **How does fish length predict fish weight for trout perch (across all sample years)?** we conclude that length is a *statistically significant* predictor of weight for perch trout across all sample years. Looking specifically at our p-value, $2\times10^{-16}$, which is far below a threshold of 0.001. Looking at the coefficient of determination, multiple $R^2$, which has a value of 0.8164 we determine that this model is well fit and we should have about 81.64% trust in the findings.  
+
+
+
+## Part 10.  
+
+```{r, warning=FALSE}
+library(ggeffects)
+predictions <- ggpredict(fit, terms = "length")
+
+plot_predictions <- ggplot(data = data_wrangle, 
+                           aes(x = length, y = weight)) +
+  # first plot the underlying data
+  geom_point() +
+  # then plot the predictions
+  geom_line(data = predictions, 
+            aes(x = x, y = predicted), 
+            color = "blue") +
+  # then plot the 95% confidence interval from ggpredict
+  geom_ribbon(data = predictions, 
+              aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), 
+              alpha = 0.2) +
+  # theme and meaningful labels
+  theme_bw() +
+  labs(x = "Perch Trout length (mm)",
+       y = "Weight (g)")
+
+plot_predictions
+```
+
+### Sub-part A:  
+This plot shows us the predictions of weight based on the length of perch trout. We can see that there is some uniformity within the predictions and length of perch trout. We have most of the predictions falling closely to the line but outside of the prediction interval.
+
+
+
+
+
+
+
+
+
+
 
 
 
