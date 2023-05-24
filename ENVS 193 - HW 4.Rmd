@@ -43,6 +43,7 @@ data_wrangle <- data %>%
 
 
 ## Part 1.  
+
 Null hypothesis: There is no linear relationship between fish length and fish weight for trout perch across all sample years.  
 $$H_0: \beta_1 = 0$$
 Alternate hypothesis: There is a linear relationship between fish length and fish weight for trout perch across all sample years.  
@@ -62,5 +63,43 @@ grid.arrange(missing_var, weight_span, layout_matrix = rbind(c(1,2)))
 
 ### Sub-part A:  
 In these missing value visualizations, we can see exactly what variables contain missing values and the span of how much missing data is in the variables that contain missing data. The left hand plot shows that `weight` is the only variable in my filtered data set. The right hand gives a better idea of the proportion of missing data for a span of 10 data points. This can help us understand if we have bias in the data and also give us an idea of whether some assumptions may be violated. We can also use these visualizations to help us decide how we can handle our missing values.  
+
+
+## Part 3.  
+
+```{r}
+fit <- lm(weight~length, data = data_wrangle) # fit a linear model
+fit
+```
+
+
+## Part 4.  
+```{r}
+par(mfrow = c(2,2)) # aligns our resulting plots in a grid
+plot(fit) # shows the assumption plots
+```
+
+
+## Part 5.  
+Residuals Vs Fitted: This plot is showing us the *predicted* values vs the residuals. In other words, we are seeing what values our model gives and the residuals which are the difference between the actual values and predicted value. As a rule of thumb, if the smoothed curve is relatively flat then we pass the linearity assumption. I am deciding that we have some outliers but in general we pass linearity assumption.  
+
+Normal Q-Q: This plot shows us standardized residuals vs theoretical quantiles of $N(0,1)$. In other words it tells us if $Y$ is normally distributed. If the points falls closely to the line, then we can say the data is normal and in our case it does.  
+
+Scale-Location: This plot shows $\sqrt{standardized\ residuals}$ vs Fitted values which rells us if we have constat variance. Since the variability around the red line is even on either side and the red line is relatively flat for the amount of data we have, we pass the homoscedasticity assumption.  
+
+Residuals Vs Leverage: This plot shows us our standardized residuals vs the leverage points which helps us see if there are influential points that alter our data. We have some outliers and some and some leverage points that seem to slightly affect our data.  
+
+## Part 6.  
+
+```{r}
+summary(fit) # the summary function will show all the estimates and coefficients
+```
+
+## Part 7.  
+
+```{r}
+
+```
+
 
 
