@@ -9,6 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 # Load data using here package  
 
 ```{r, warning=FALSE}
@@ -177,7 +178,8 @@ This plot shows us the predictions of weight based on the length of perch trout.
 
 
 
-
+# Links  
+View this on my [**github**](https://github.com/rileyjzamo/ENVS-193DS_homework-04_Zamora-Riley)
 
 
 
