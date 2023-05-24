@@ -9,3 +9,58 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Load data using here package  
+
+```{r, warning=FALSE}
+library(here)
+data_path <- here('ntl6_v12.csv') # returns the path to specified file
+data <- read.csv(data_path) # load in data specified by here function
+head(data)
+```
+
+# Problem 1  
+
+Question at hand:  
+**How does fish length predict fish weight for trout perch (across all sample years)?**  
+
+Our model (SLR):  
+Let $Y$ represent the weight for all sampled trout perch.  
+Let $x_1$ represent the length for all sampled trout perch.  
+Let $\beta_0$ be the intercept coefficient.  
+Let $\beta_1$ be the slope coefficient.  
+Let $\epsilon$ be the error term.
+
+$$Y = \beta_0 + \beta_1x_1 + \epsilon$$
+
+## Wrangle data  
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+data_wrangle <- data %>% 
+  select(spname, length, weight, year4) %>% 
+  filter(spname == 'TROUTPERCH')
+```
+
+
+## Part 1.  
+Null hypothesis: There is no linear relationship between fish length and fish weight for trout perch across all sample years.  
+$$H_0: \beta_1 = 0$$
+Alternate hypothesis: There is a linear relationship between fish length and fish weight for trout perch across all sample years.  
+$$H_a: \beta_1 \ne 0$$  
+
+
+## Part 2.  
+
+```{r, warning=FALSE}
+library(naniar) # for missing data vis
+library(gridExtra) # to help arrange my plots
+missing_var <- gg_miss_var(data_wrangle)
+weight_span <- gg_miss_span(data_wrangle, weight, span_every = 10)
+
+grid.arrange(missing_var, weight_span, layout_matrix = rbind(c(1,2)))
+```
+
+### Sub-part A:  
+In these missing value visualizations, we can see exactly what variables contain missing values and the span of how much missing data is in the variables that contain missing data. The left hand plot shows that `weight` is the only variable in my filtered data set. The right hand gives a better idea of the proportion of missing data for a span of 10 data points. This can help us understand if we have bias in the data and also give us an idea of whether some assumptions may be violated. We can also use these visualizations to help us decide how we can handle our missing values.  
+
+
